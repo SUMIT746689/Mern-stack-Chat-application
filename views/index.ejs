@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Sumit Saha" />
+    <meta name="owner" content="learnwithsumit.com" />
+    <title>Login</title>
+    <link rel="shortcut icon" href="./images/favicon.png" />
+    <link rel="stylesheet" href="./stylesheets/toastify.css" />
+    <link rel="stylesheet" href="./stylesheets/style.css" />
+    <script src="./js/toastify.js"></script>
+  </head>
+  <body>
+    <%- include('./partials/nav.js')%>
+    <div id="login-container">
+      <div id="left-column"></div>
+      <div id="branding">
+        <img src="./images/logo.png" />
+        <h1>Login - Chat Application</h1>
+      </div>
+      <div id="login-form">
+        <form 
+          method="post" 
+          action="/"
+          enctype="multipart/form-data"
+          >
+          <input
+            type="text"
+            name="username"
+            placeholder="enter mobile or email"
+            value=""
+          />
+          <p class="error show">Error message here</p>
+          <input type="password" name="password" placeholder="enter password" />
+          <input type="submit" value="Login" />
+        </form>
+      </div>
+    </div>
+
+    <script>
+      
+    </script>
+  </body>
+</html>
