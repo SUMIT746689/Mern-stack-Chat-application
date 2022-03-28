@@ -7,14 +7,14 @@ function avatarHandle (req,res,next){
     const upload = avatarUploadHandle(
         "avatars",
         ['image/jpg','image/jpeg','image/png'],
-        "Only jpeg, jpg and png file accepte"
+        "Only jpeg, jpg and png file accepted"
     );
     upload.any()(req,res,(err)=>{
         if(err){
             res.status(500).json({
                 errors : {
                     avatar : {
-                        err
+                        msg : err.message
                     } 
                 }
             })

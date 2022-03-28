@@ -33,16 +33,22 @@
             </tr>
           </thead>
           <tbody id="users-table">
+            <% usersData.forEach((value)=>{ %>
             <tr id="">
               <td class="name">
+                <% if(value.avatar === undefined){%>
                 <img src="./images/user1.png" />
-                <span>User 1</span>
+                <% }else{ %>
+                  <img src="./avatars/<%= value.avatar %>" />
+                <% } %>
+                <span><%= value.name%></span>
               </td>
-              <td>email@email.com</td>
-              <td class="manage">
+              <td><%= value.email%></td>
+              <td class="manage" onclick="deleteUser('<%= value._id%>')">
                 <img src="./images/trash.png" alt="Delete" />
               </td>
             </tr>
+            <% }) %>
           </tbody>
         </table>
       </div>
@@ -57,27 +63,40 @@
         <div class="modal-body">
           <form 
            id="add-user-form"
+           action="/users"
            method="POST"
            enctype="multipart/form-data"
            >
             <input type="text" placeholder="enter name" name="name" />
-            <p class="error show">This is error</p>
+            <p class="error error-name"></p>
+            
             <input type="text" placeholder="enter email" name="email" />
+            <p class="error error-email"></p>
+            
             <input type="text" placeholder="enter mobile" name="mobile" />
+            <p class="error error-mobile"></p>
+            
             <input
               type="password"
               placeholder="enter password"
               name="password"
+              id ="password"
             />
+            <p class="error error-password"></p>
+            
             <input type="file" name="avatar" />
+            <p class="error error-avatar">This is error</p>
+            
             <input type="submit" value="Submit" />
           </form>
         </div>
       </div>
     </div>
     <script>
-      const modal = document.querySelector("#add-user-modal");
-      const form  = document.querySelector("#add-user-form");
+      const modal    = document.querySelector("#add-user-modal");
+      const form     = document.querySelector("#add-user-form");
+      const password = document.querySelector("#password");
+      const manage = document.querySelector(".manage");
       
       function closeModal() {
         modal.style.display = "none";
@@ -85,10 +104,76 @@
       function openModal() {
         modal.style.display = "block";
       }
+      //delete users
+      async function deleteUser(userId) {
+        console.log(userId)
+        await fetch('/users',{
+          method : 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+        },
+          body :JSON.stringify({userId}),
+          
+        })
+          .then((data)=>data.json()) 
+          .then((data)=>{
+            if (data.success.msg !== undefined){
+              location.reload();
+            }
+          })
+          .catch((err)=>{
+            console.log(err);
+          }) 
+      }
+      //form submit handle
+      form.addEventListener('submit',async(e)=>{
+        //prevent rerender
+        e.preventDefault();
+        //get response from server
+        let responseMessage ;
+        //form data type
+        let formData = new FormData(form);
+        
+        console.log(formData)
+        //get response from server
+        await fetch('/users',{
+          method: 'POST',
+          body : formData,
 
-      form.addEventListener('submit',(e)=>{
-      //  e.preventDefault();
-      })
+        })
+        .then(response => response.json())
+        .then(data => {
+         responseMessage = {...data}
+        })
+        .catch((error) => {
+         console.error('Error:', error);
+        });
+        //set error messages default none
+        const errorTags = document.querySelectorAll('.error');
+        errorTags.forEach((value)=>{
+          value.textContent = ''
+        })
+        //json response success check
+        if(responseMessage?.success?.msg !== undefined){
+          console.log(responseMessage.success);
+          setInterval(()=>{
+            location.reload();
+          },1000)
+          
+        }
+          
+        // json error response  send in a html format
+        else if(Object.keys(responseMessage.errors).length>0){
+          Object.keys(responseMessage.errors).forEach((value)=>{
+        
+            const ptag =  document.querySelector(`.error-${value}`);
+            ptag.textContent = responseMessage.errors[value].msg;
+            ptag.style.display = 'block';          
+            password.value= ''
+          
+          })
+        }
+      });
     </script>
   </body>
 </html>

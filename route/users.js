@@ -1,18 +1,33 @@
 //external middleware
 const express = require('express');
-const avatarHandle = require('../middleware/users/avatarHandle');
-const { validate } = require('../middleware/users/validator');
 
 //internal middleware
 const router = express.Router();
+const avatarHandle = require('../middleware/users/avatarHandle');
+const { dataBaseUpload } = require('../middleware/users/dataBaseUpload');
+const { deleteHandle } = require('../middleware/users/deleteHandle');
+const { validate, validationResultHandle } = require('../middleware/users/validator');
+const { Users } = require('../schema/usersSchema');
 
-router.get('/',(req,res,next)=>{
-    res.render('users');
+
+router.get('/',async (req,res,next)=>{
+    const usersData = await Users.find();
+
+    console.log(usersData);
+    res.render('users',{
+        usersData
+    });
 })
 
-router.post('/',avatarHandle,validate,(req,res,next)=>{
+router.post('/',avatarHandle,validate,validationResultHandle,dataBaseUpload,(req,res,next)=>{
     
-    res.json(req.files);
+    res.status(200).json({
+        success :{
+            msg : 'successfully created '
+        }
+    });
 })
+
+router.delete('/',deleteHandle)
 
 module.exports = router ;

@@ -36,7 +36,7 @@ function avatarUploadHandle (
                 cb(null,true);
             }
             else{
-                cb(null,false);
+                cb(createError(errorMessage));
             }
         }
     })

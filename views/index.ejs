@@ -22,25 +22,76 @@
       </div>
       <div id="login-form">
         <form 
-          method="post" 
+          method="POST" 
           action="/"
-          enctype="multipart/form-data"
           >
+          <p class="error error-common"></p>
           <input
             type="text"
             name="username"
             placeholder="enter mobile or email"
             value=""
+            id = 'username'
           />
-          <p class="error show">Error message here</p>
-          <input type="password" name="password" placeholder="enter password" />
+          <p class="error error-username"></p>
+          
+          <input 
+            type="password" 
+            name="password" 
+            placeholder="enter password"
+            id = "password" 
+          />
+          <p class="error error-password"></p>
+          
           <input type="submit" value="Login" />
         </form>
       </div>
     </div>
 
     <script>
-      
+      const form = document.querySelector('form');
+      const username = document.querySelector('#username');
+      const password = document.querySelector('#password');
+
+      form.addEventListener('submit',async (e)=>{
+        e.preventDefault();
+        
+        let responseData ;
+        let formData = await new FormData(form);
+        console.log(formData);
+        
+        //form data send using api 
+        await fetch('/',{
+          method : 'POST',
+          headers : {
+            'Content-Type': 'application/json'
+          },
+          body : JSON.stringify({
+            username : username.value,
+            password : password.value
+          })
+        })
+        .then((data)=>data.json())
+        .then((data)=>{
+          responseData = data ;
+          console.log(data)
+        })
+        .catch(err=>{console.log(err)});
+        //handle success message
+        if(responseData?.success !== undefined){
+          location.replace('http://localhost:3000/inbox')
+        }
+        //handle error messages to form
+        else if(responseData?.errors !== undefined){
+          Object.keys(responseData.errors).forEach((value)=>{
+            
+            const errorTag = document.querySelector(`.error-${value}`);
+            errorTag.style.display = 'block';
+            errorTag.textContent = responseData.errors[value].msg ;
+            console.log(errorTag);
+          })
+        }
+      })
     </script>
   </body>
 </html>
