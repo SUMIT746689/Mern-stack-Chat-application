@@ -2,6 +2,8 @@
 const express = require('express');
 const {Server} = require('socket.io');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser')
+
 require('dotenv').config()
 
 //confige express and socket io
@@ -32,6 +34,10 @@ app.use(express.static('public'));
 
 //set a ejs tamplate
 app.set('view engine','ejs');
+
+//set cookie parser
+app.use(cookieParser(String(process.env.signedCookieSecret)))
+
 
 //application routes
 app.use('/',login);

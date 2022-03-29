@@ -8,9 +8,10 @@ const { dataBaseUpload } = require('../middleware/users/dataBaseUpload');
 const { deleteHandle } = require('../middleware/users/deleteHandle');
 const { validate, validationResultHandle } = require('../middleware/users/validator');
 const { Users } = require('../schema/usersSchema');
+const { authCheck } = require('../utilities/authCheck');
 
 
-router.get('/',async (req,res,next)=>{
+router.get('/',authCheck,async (req,res,next)=>{
     const usersData = await Users.find();
 
     console.log(usersData);

@@ -3,9 +3,10 @@ const express = require('express');
 
 //internal middleware
 const route = express.Router();
+const { authCheck } = require('../utilities/authCheck');
 
-
-route.get('/',(req,res,next)=>{
+route.get('/',authCheck,(req,res,next)=>{
+    console.log(req.signedCookies.authToken)
     res.render('inbox');
 })
 
