@@ -11,7 +11,7 @@ async function authCheck(req,res,next) {
     }
     catch(err){
         console.log(err.message);
-        res.render('index')
+        res.redirect('/');
     }
 }
     

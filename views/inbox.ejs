@@ -13,7 +13,7 @@
     <script src="./js/toastify.js"></script>
   </head>
   <body>
-    <%- include('./partials/nav.js')%>
+    <%- include('./partials/nav.ejs')%>
     <div id="chat-container">
       <div id="search-container">
         <input type="text" placeholder="Search" />
@@ -33,7 +33,9 @@
         </div>
       </div>
       <div id="new-message-container">
-        <a href="#">+</a>
+        <a href="#" style="font-size: 5rem;text-decoration: none;padding-left: 35%;color: aliceblue;">
+          +
+        </a>
       </div>
       <div id="chat-title">
         <span>Sumit</span>

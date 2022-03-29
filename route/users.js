@@ -10,25 +10,29 @@ const { validate, validationResultHandle } = require('../middleware/users/valida
 const { Users } = require('../schema/usersSchema');
 const { authCheck } = require('../utilities/authCheck');
 
-
+//users get router
 router.get('/',authCheck,async (req,res,next)=>{
     const usersData = await Users.find();
 
     console.log(usersData);
     res.render('users',{
-        usersData
+        usersData,
+        authToken : req.signedCookies?.authToken
+        
     });
 })
 
+//users Post router 
 router.post('/',avatarHandle,validate,validationResultHandle,dataBaseUpload,(req,res,next)=>{
     
     res.status(200).json({
         success :{
-            msg : 'successfully created '
+            msg : 'successfully created'
         }
     });
 })
 
+//user delete router
 router.delete('/',deleteHandle)
 
 module.exports = router ;

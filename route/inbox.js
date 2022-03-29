@@ -5,9 +5,12 @@ const express = require('express');
 const route = express.Router();
 const { authCheck } = require('../utilities/authCheck');
 
+//get inbox info
 route.get('/',authCheck,(req,res,next)=>{
     console.log(req.signedCookies.authToken)
-    res.render('inbox');
+    res.render('inbox',{
+        authToken : req.signedCookies?.authToken
+    });
 })
 
 module.exports = route ;

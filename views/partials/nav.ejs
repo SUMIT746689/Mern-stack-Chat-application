@@ -1,0 +1,19 @@
+<div class="menu">
+    <div class="menu-item"><a href="/inbox">Inbox</a></div>
+    <div class="menu-item"><a href="/users">Users</a></div>
+    <div class="menu-item">
+        <% if(authToken) { %>
+            <a href="/"  onclick='logOutHandle()'>Logout</a></div>
+        <% }else{ %>
+            <a href="/">Login</a></div>
+        <% } %>
+</div>
+<script>
+    async function logOutHandle (){
+        const logOutResponse = await fetch('/logout',{
+            method : 'DELETE'
+        });
+        const logOutResponseString = await logOutResponse.json();
+        console.log(logOutResponseString) 
+    }
+</script>

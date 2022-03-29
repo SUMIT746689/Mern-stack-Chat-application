@@ -26,11 +26,15 @@ async function authHandle (req,res,next) {
             },
             process.env.jsonSecret,
             {
-                expiresIn : '600000'
+                expiresIn : Number(process.env.expireTime)
             })
         
-        //response a cookie 
-        res.cookie('authToken',jwtData,{signed:true});
+        //response a signed cookie 
+        res.cookie('authToken',jwtData,{
+            signed:true,
+            expires : new Date(Date.now + Number(process.env.expireTime)) ,
+            httpOnly : true
+        });
         //res.clearCookie('authToken');
         console.log(jwtData);
 
@@ -43,7 +47,7 @@ async function authHandle (req,res,next) {
             })
         }
         else{
-            res.status(200).json({
+            res.status(400).json({
                 errors : {
                     common : {
                         msg : 'password or username is not valid' 
@@ -56,7 +60,7 @@ async function authHandle (req,res,next) {
         res.status(400).json({
             errors : {
                 common : {
-                    msg : 'password or username is not valid' 
+                    msg : err.message 
                 }
             }
         })
