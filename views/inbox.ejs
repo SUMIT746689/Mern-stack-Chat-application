@@ -69,13 +69,52 @@
           <h2>Create New Conversation</h2>
         </div>
         <div class="modal-body">
-          <form>
-            <input type="text" placeholder="Name" />
-            <input type="text" placeholder="Username" />
-            <input type="button" value="Submit" />
+          <form id='modal-wrapper-form'>
+            <input type="text" id="modal-wrapper-form-input" name="username" placeholder="Username" />
+            <div>
+
+            </div>
+            <input type="submit" value="Submit" />
           </form>
         </div>
       </div>
     </div>
+
+    <script>
+    
+    const newMessageContainer = document.querySelector('#new-message-container');
+    const modalWrapper = document.querySelector('.modal-wrapper');
+    const closeModal = document.querySelector('.modal-close');
+    const modalWrapperForm = document.querySelector('#modal-wrapper-form');
+    const modalWrapperFormInput = document.querySelector('#modal-wrapper-form-input');
+    
+    
+    //show modal wrapper for create new conversion
+    newMessageContainer.addEventListener('click',()=>{
+      modalWrapper.style.display = 'block'
+    })
+    //close modal wrapper click handle
+    closeModal.addEventListener('click',()=>{
+      modalWrapper.style.display = 'none'
+    })
+
+    //create a coversation form submit handle
+    modalWrapperForm.addEventListener('submit',async (e)=>{
+      e.preventDefault();
+      await fetch('/inbox',{
+        method : 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body : JSON.stringify({input:modalWrapperFormInput.value})
+      })
+      .then((data)=>data.json())
+      .then((data)=>{console.log(data)})
+      .catch((err)=>{console.log(err)})
+      
+    })
+    
+    </script>
   </body>
 </html>

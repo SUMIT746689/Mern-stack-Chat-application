@@ -2,15 +2,20 @@
 const express = require('express');
 
 //internal middleware
-const route = express.Router();
+const router = express.Router();
 const { authCheck } = require('../utilities/authCheck');
 
 //get inbox info
-route.get('/',authCheck,(req,res,next)=>{
-    console.log(req.signedCookies.authToken)
+router.get('/',authCheck,(req,res,next)=>{
     res.render('inbox',{
         authToken : req.signedCookies?.authToken
     });
+});
+
+//post method for create new conversion
+router.post('/',(req,res,next)=>{
+    console.log(req.body);
+    res.json({body :req.body});
 })
 
-module.exports = route ;
+module.exports = router ;

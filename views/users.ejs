@@ -63,9 +63,6 @@
         <div class="modal-body">
           <form 
            id="add-user-form"
-           action="/users"
-           method="POST"
-           enctype="multipart/form-data"
            >
             <input type="text" placeholder="enter name" name="name" />
             <p class="error error-name"></p>
@@ -139,15 +136,14 @@
         await fetch('/users',{
           method: 'POST',
           body : formData,
-
-        })
-        .then(response => response.json())
-        .then(data => {
-         responseMessage = {...data}
-        })
-        .catch((error) => {
-         console.error('Error:', error);
-        });
+          })
+            .then(response => response.json())
+            .then(data => {
+            responseMessage = {...data}
+          })
+            .catch((error) => {
+            console.error('Error:', error);
+          });
         //set error messages default none
         const errorTags = document.querySelectorAll('.error');
         errorTags.forEach((value)=>{
@@ -156,9 +152,7 @@
         //json response success check
         if(responseMessage?.success?.msg !== undefined){
           console.log(responseMessage.success);
-          setInterval(()=>{
-            location.reload();
-          },1000)
+          location.reload()
           
         }
           
