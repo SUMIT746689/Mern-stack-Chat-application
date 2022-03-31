@@ -101,18 +101,23 @@
     //create a coversation form submit handle
     modalWrapperForm.addEventListener('submit',async (e)=>{
       e.preventDefault();
+      let responseData ;
       await fetch('/inbox',{
         method : 'POST',
         headers: {
           'Content-Type': 'application/json'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
         },
         body : JSON.stringify({input:modalWrapperFormInput.value})
       })
       .then((data)=>data.json())
-      .then((data)=>{console.log(data)})
+      .then((data)=>{
+        responseData = data ;
+        console.log(data)
+      })
       .catch((err)=>{console.log(err)})
-      
+      if(responseData !== undefined){
+        console.log('asdfaFd')
+      }
     })
     
     </script>

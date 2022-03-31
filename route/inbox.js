@@ -1,5 +1,6 @@
 //external middleware
 const express = require('express');
+const createNewConversation = require('../middleware/inbox/createNewConversation');
 
 //internal middleware
 const router = express.Router();
@@ -13,9 +14,6 @@ router.get('/',authCheck,(req,res,next)=>{
 });
 
 //post method for create new conversion
-router.post('/',(req,res,next)=>{
-    console.log(req.body);
-    res.json({body :req.body});
-})
+router.post('/',authCheck,createNewConversation)
 
 module.exports = router ;

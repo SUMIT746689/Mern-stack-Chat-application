@@ -32,9 +32,10 @@ async function authHandle (req,res,next) {
         //response a signed cookie 
         res.cookie('authToken',jwtData,{
             signed:true,
-            expires : new Date(Date.now + Number(process.env.expireTime)) ,
-            httpOnly : true
+            maxAge:  Number(process.env.expireTime),
+            httpsOnly : true
         });
+
         //res.clearCookie('authToken');
         console.log(jwtData);
 
