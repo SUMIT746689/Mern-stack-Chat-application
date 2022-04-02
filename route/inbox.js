@@ -29,7 +29,7 @@ router.get('/',authCheck, async (req,res,next)=>{
 router.post('/',authCheck,searchUsers);
 
 //conversation message handle 
-router.post('/messages',chatAvatarHandle,chatMessage)
+router.post('/messages/:id',authCheck,chatAvatarHandle,chatMessage)
 
 //recieve create conversation 
 router.post('/:id',authCheck,createConversationByUserId);

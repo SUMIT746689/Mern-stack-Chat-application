@@ -59,7 +59,7 @@
       </div>
       <form id="chat-form">
         <!-- <img src="./images/attachment.png" inputmode="file" type="file" alt=Add Attachment=""/> -->
-        <input  type="file" style="width: 100%" name="avatar" />
+        <input type="file" style="width: 100%" name="avatar" />
         <input name="message" id="chat-message" type="text" placeholder="Type a message" />
       </form>
     </div>
@@ -96,7 +96,7 @@
     const chatForm = document.querySelector('#chat-form');
     
     let noOfRequestOnPerClick = 1 ;
-    
+    let conversationId ; 
     //show modal wrapper for create new conversion
     newMessageContainer.addEventListener('click',()=>{
       modalWrapper.style.display = 'block'
@@ -161,6 +161,8 @@
     //conversation event handler
     function conversation(id){
 
+      //set conversationId value
+      conversationId = id ;
       //set conversation un Active and active
       const conversationList = document.querySelectorAll(`.conversation`);
       
@@ -175,27 +177,35 @@
     //socket.io create
     const server = io();
     //send message to server 
+
     chatForm.addEventListener('submit',async(e)=>{
       e.preventDefault();
       
       //decorate form data
       let formData = new FormData(chatForm);
 
-      await fetch('./inbox/messages',{
-        method: 'POST',
-        body : formData
-      })
-      .then(data=>data.json())
-      .then(data=>{
-        console.log(data);
-      })
-      .catch(err=>{console.log(err)});
+      //inbox messages 
+      if(conversationId){
+        await fetch(`/inbox/messages/${conversationId}`,{
+          method: 'POST',
+          body : formData,
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+      }
       
+    });
 
-      // server.emit('sendMessage',{
-      //   message : 'sumit'
-      // })
-    })
+    //pass if have a conversationID
+    if(conversationId){
+      
+    }
+    
     </script>
   </body>
 </html>

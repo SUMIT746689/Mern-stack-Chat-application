@@ -1,4 +1,5 @@
 //External middleware
+const timespan = require('jsonwebtoken/lib/timespan');
 const mongoose = require('mongoose');
 
 //create schema
@@ -12,16 +13,16 @@ const messageSchema =new mongoose.Schema({
         type : String,
         required : true
     },
-    message : {
-        type : String
-    },
     user_avatar : {
         type : String
     },
     perticipent_avatar : {
         type : String
     },
-});
+    message : {
+        type : Array
+    }
+},{timestamps : true});
 
 //create a model for database
 const Message = mongoose.model('message',messageSchema);
