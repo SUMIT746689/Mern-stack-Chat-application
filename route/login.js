@@ -8,10 +8,12 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 //login info
-router.get('/',async (req,res,next)=>{
+router.get('/', (req,res,next)=>{
     try{
+        //varify if token finds and success or not
         const responseToken = jwt.verify(req.signedCookies?.authToken || '', process.env.jsonSecret );
-        console.log( responseToken);
+        
+        //render inbox if token success
         res.render('inbox',{
             authToken : req.signedCookies?.authToken
         });

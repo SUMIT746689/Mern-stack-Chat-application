@@ -95,6 +95,9 @@
       const password = document.querySelector("#password");
       const manage = document.querySelector(".manage");
       
+      //handle no of click hit one time
+      let noOfClick = 1 ;
+
       function closeModal() {
         modal.style.display = "none";
       }
@@ -104,23 +107,29 @@
       //delete users
       async function deleteUser(userId) {
         console.log(userId)
-        await fetch('/users',{
-          method : 'DELETE',
-          headers: {
-            'Content-Type': 'application/json'
-        },
-          body :JSON.stringify({userId}),
-          
-        })
-          .then((data)=>data.json()) 
-          .then((data)=>{
-            if (data.success.msg !== undefined){
-              location.reload();
-            }
+        //delete users form server via fetch 
+        if(noOfClick === 1 ){
+          noOfClick = 2 ;
+          await fetch('/users',{
+            method : 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+          },
+            body :JSON.stringify({userId}),
+            
           })
-          .catch((err)=>{
-            console.log(err);
-          }) 
+            .then((data)=>data.json()) 
+            .then((data)=>{
+              if (data.success.msg !== undefined){
+                location.reload();
+              }
+            })
+            .catch((err)=>{
+              noOfClick = 1 ;
+              console.log(err);
+              
+            }) 
+        } 
       }
       //form submit handle
       form.addEventListener('submit',async(e)=>{
@@ -132,40 +141,42 @@
         let formData = new FormData(form);
         
         console.log(formData)
-        //get response from server
-        await fetch('/users',{
-          method: 'POST',
-          body : formData,
+        if(noOfClick === 1 ){
+          noOfClick = 2 ; 
+          //get response from server
+          await fetch('/users',{
+            method: 'POST',
+            body : formData,
+            })
+              .then(response => response.json())
+              .then(data => {
+              responseMessage = {...data}
+            })
+              .catch((error) => {
+              console.error('Error:', error);
+            });
+          //set error messages default none
+          const errorTags = document.querySelectorAll('.error');
+          errorTags.forEach((value)=>{
+            value.textContent = ''
           })
-            .then(response => response.json())
-            .then(data => {
-            responseMessage = {...data}
-          })
-            .catch((error) => {
-            console.error('Error:', error);
-          });
-        //set error messages default none
-        const errorTags = document.querySelectorAll('.error');
-        errorTags.forEach((value)=>{
-          value.textContent = ''
-        })
-        //json response success check
-        if(responseMessage?.success?.msg !== undefined){
-          console.log(responseMessage.success);
-          location.reload()
+          //json response success check
+          if(responseMessage?.success?.msg !== undefined){
+            console.log(responseMessage.success);
+            location.reload()
+          }
+            
+          // json error response  send in a html format
+          else if(Object.keys(responseMessage.errors).length>0){
+            Object.keys(responseMessage.errors).forEach((value)=>{
           
-        }
-          
-        // json error response  send in a html format
-        else if(Object.keys(responseMessage.errors).length>0){
-          Object.keys(responseMessage.errors).forEach((value)=>{
-        
-            const ptag =  document.querySelector(`.error-${value}`);
-            ptag.textContent = responseMessage.errors[value].msg;
-            ptag.style.display = 'block';          
-            password.value= ''
-          
-          })
+              const ptag =  document.querySelector(`.error-${value}`);
+              ptag.textContent = responseMessage.errors[value].msg;
+              ptag.style.display = 'block';          
+              password.value= ''
+              noOfClick = 1 ;
+            })
+          }
         }
       });
     </script>

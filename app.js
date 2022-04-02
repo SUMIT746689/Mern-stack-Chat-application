@@ -45,9 +45,8 @@ app.use('/users',users);
 app.use('/inbox',inbox);
 
 //chats control using socketIO
-io.on('connection', (socket) => {
-  console.log('a user connected');
-});
+
+global.io = io ;
 
 //default error handler
 app.use(defaultRouter);

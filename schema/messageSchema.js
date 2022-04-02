@@ -14,7 +14,13 @@ const messageSchema =new mongoose.Schema({
     },
     message : {
         type : String
-    }
+    },
+    user_avatar : {
+        type : String
+    },
+    perticipent_avatar : {
+        type : String
+    },
 });
 
 //create a model for database

@@ -21,8 +21,10 @@ async function authHandle (req,res,next) {
 
         //create a jsonWebToken 
         const jwtData = jwt.sign({
+                userId : responseUser._id,
                 name : responseUser.name,
-                mobile : responseUser.mobile
+                mobile : responseUser.mobile,
+                avatar : responseUser.avatar
             },
             process.env.jsonSecret,
             {

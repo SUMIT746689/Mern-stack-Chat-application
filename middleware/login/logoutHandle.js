@@ -9,7 +9,7 @@ function logoutHandle (req,res,next) {
         })
     }
     catch(err){
-        res.status(200).json({
+        res.status(400).json({
             errors : {
                 common : {
                     msg : err.message

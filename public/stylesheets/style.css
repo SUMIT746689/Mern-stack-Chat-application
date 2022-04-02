@@ -121,6 +121,7 @@ input[type="submit"]:active {
   cursor: pointer;
   display: none;
 }
+
 .modal {
   width: 450px;
   z-index: 99;
@@ -175,6 +176,21 @@ input[type="submit"]:active {
   color: #fff;
 }
 
+#modal-wrapper-form-input-search{
+  font-size: 2rem;
+  color: #ddd;
+  max-height: 100px;
+  overflow-y: scroll;
+}
+#modal-wrapper-form-input-search > p {
+  padding: 5px;
+  background-color: rgba(0, 0, 0, 0.55);
+  margin-bottom: 1px;
+  transition: all ease-in-out 0.3s;
+}
+#modal-wrapper-form-input-search > p:hover{
+  background-color: rgba(0, 0, 0, 0.2);
+}
 .search_users {
   display: none;
   background: var(--secondary);

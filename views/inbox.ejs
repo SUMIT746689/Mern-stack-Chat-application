@@ -18,19 +18,20 @@
       <div id="search-container">
         <input type="text" placeholder="Search" />
       </div>
+      
       <div id="conversation-list">
-        <div class="conversation active">
-          <img src="./images/user1.png" alt="Sumit" />
+        <% responseMessage.forEach((value)=>{%>
+        <div class="conversation conversation-<%= value._id%>" onclick="conversation('<%=value._id%>')" >
+          <%if(value.perticipent_avatar){ %>
+            <img src= "<%=`./avatars/${value.perticipent_avatar}`%>" alt="Sumit" />
+          <% }else{ %>
+            <img src="./images/user1.png" alt="Sumit" />
+          <% } %>
           <div class="title-text">Sumit Saha</div>
           <di class="created-date"> Apr 16 </di>
           <div class="conversation-message">This is a message</div>
         </div>
-        <div class="conversation">
-          <img src="./images/user2.png" alt="Sumit" />
-          <div class="title-text">Sumit Saha</div>
-          <di class="created-date"> Apr 16 </di>
-          <div class="conversation-message">This is a message</div>
-        </div>
+        <% }) %>
       </div>
       <div id="new-message-container">
         <a href="#" style="font-size: 5rem;text-decoration: none;padding-left: 35%;color: aliceblue;">
@@ -56,12 +57,14 @@
           </div>
         </div>
       </div>
-      <div id="chat-form">
-        <img src="./images/attachment.png" alt=Add Attachment"" />
-        <input type="text" placeholder="Type a message" />
-      </div>
+      <form id="chat-form">
+        <!-- <img src="./images/attachment.png" inputmode="file" type="file" alt=Add Attachment=""/> -->
+        <input  type="file" style="width: 100%" name="avatar" />
+        <input name="message" id="chat-message" type="text" placeholder="Type a message" />
+      </form>
     </div>
 
+    <!--new conversation create-->
     <div class="modal-wrapper">
       <div class="modal">
         <a href="#" class="modal-close">+</a>
@@ -71,7 +74,8 @@
         <div class="modal-body">
           <form id='modal-wrapper-form'>
             <input type="text" id="modal-wrapper-form-input" name="username" placeholder="Username" />
-            <div>
+            <!--Search Items show-->
+            <div id="modal-wrapper-form-input-search">
 
             </div>
             <input type="submit" value="Submit" />
@@ -80,6 +84,7 @@
       </div>
     </div>
 
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
     <script>
     
     const newMessageContainer = document.querySelector('#new-message-container');
@@ -87,7 +92,10 @@
     const closeModal = document.querySelector('.modal-close');
     const modalWrapperForm = document.querySelector('#modal-wrapper-form');
     const modalWrapperFormInput = document.querySelector('#modal-wrapper-form-input');
+    const modalWrapperFormInputSearch = document.querySelector('#modal-wrapper-form-input-search');
+    const chatForm = document.querySelector('#chat-form');
     
+    let noOfRequestOnPerClick = 1 ;
     
     //show modal wrapper for create new conversion
     newMessageContainer.addEventListener('click',()=>{
@@ -102,6 +110,8 @@
     modalWrapperForm.addEventListener('submit',async (e)=>{
       e.preventDefault();
       let responseData ;
+
+      //fetch users by search from server 
       await fetch('/inbox',{
         method : 'POST',
         headers: {
@@ -112,14 +122,80 @@
       .then((data)=>data.json())
       .then((data)=>{
         responseData = data ;
-        console.log(data)
+        console.log(data);
       })
       .catch((err)=>{console.log(err)})
+      //set 
+      modalWrapperFormInputSearch.innerHTML =''
       if(responseData !== undefined){
-        console.log('asdfaFd')
+        responseData.forEach((value)=>{
+          console.log(value);
+          modalWrapperFormInputSearch.innerHTML = modalWrapperFormInputSearch.innerHTML + `<p onclick=userCreateConversion('${value._id}')> ${value.name} </p>` ;
+        
+        })
       }
-    })
+    });
     
+    //Every user p tag handle
+    async function userCreateConversion(id){
+      if(noOfRequestOnPerClick === 1){
+        noOfRequestOnPerClick+=1;
+        
+        //send data to server for create a conversation
+        await fetch(`/inbox/${id}`,{
+          method: 'POST'
+        })
+        .then((data)=>data.json())
+        .then((data)=>{
+          console.log(data);
+          location.reload();
+        })
+        .catch((err)=>{
+          console.log(err);
+          noOfRequestOnPerClick = 1 ;
+        })
+        
+      }
+    }
+
+    //conversation event handler
+    function conversation(id){
+
+      //set conversation un Active and active
+      const conversationList = document.querySelectorAll(`.conversation`);
+      
+      conversationList.forEach((value)=>{
+        value.classList.contains(`conversation-${id}`) ? value.classList.add('active') : value.classList.remove('active');
+      })
+
+      console.log(id);
+      chatForm.style.visibility = 'visible';
+    }
+    
+    //socket.io create
+    const server = io();
+    //send message to server 
+    chatForm.addEventListener('submit',async(e)=>{
+      e.preventDefault();
+      
+      //decorate form data
+      let formData = new FormData(chatForm);
+
+      await fetch('./inbox/messages',{
+        method: 'POST',
+        body : formData
+      })
+      .then(data=>data.json())
+      .then(data=>{
+        console.log(data);
+      })
+      .catch(err=>{console.log(err)});
+      
+
+      // server.emit('sendMessage',{
+      //   message : 'sumit'
+      // })
+    })
     </script>
   </body>
 </html>

@@ -52,44 +52,51 @@
       const form = document.querySelector('form');
       const username = document.querySelector('#username');
       const password = document.querySelector('#password');
+      
+      //handle no of click hit one time
+      let noOfClick = 1 ;
 
       form.addEventListener('submit',async (e)=>{
         e.preventDefault();
         
         let responseData ;
-        let formData = await new FormData(form);
+       
         console.log(formData);
         
-        //form data send using api 
-        await fetch('/',{
-          method : 'POST',
-          headers : {
-            'Content-Type': 'application/json'
-          },
-          body : JSON.stringify({
-            username : username.value,
-            password : password.value
+        if(noOfClick === 1 ){
+          noOfClick = 2 ;
+          //form data send using api 
+          await fetch('/',{
+            method : 'POST',
+            headers : {
+              'Content-Type': 'application/json'
+            },
+            body : JSON.stringify({
+              username : username.value,
+              password : password.value
+            })
           })
-        })
-        .then((data)=>data.json())
-        .then((data)=>{
-          responseData = data ;
-          console.log(data)
-        })
-        .catch(err=>{console.log(err)});
-        //handle success message
-        if(responseData?.success !== undefined){
-          location.replace('http://localhost:3000/inbox')
-        }
-        //handle error messages to form
-        else if(responseData?.errors !== undefined){
-          Object.keys(responseData.errors).forEach((value)=>{
-            
-            const errorTag = document.querySelector(`.error-${value}`);
-            errorTag.style.display = 'block';
-            errorTag.textContent = responseData.errors[value].msg ;
-            console.log(errorTag);
+          .then((data)=>data.json())
+          .then((data)=>{
+            responseData = data ;
+            console.log(data)
           })
+          .catch(err=>{console.log(err)});
+          //handle success message
+          if(responseData?.success !== undefined){
+            location.replace('http://localhost:3000/inbox')
+          }
+          //handle error messages to form
+          else if(responseData?.errors !== undefined){
+            Object.keys(responseData.errors).forEach((value)=>{
+              
+              const errorTag = document.querySelector(`.error-${value}`);
+              errorTag.style.display = 'block';
+              errorTag.textContent = responseData.errors[value].msg ;
+              console.log(errorTag);
+              noOfClick = 1 ;
+            })
+          }
         }
       })
     </script>
