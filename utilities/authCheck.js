@@ -8,6 +8,7 @@ async function authCheck(req,res,next) {
     const jwtResponse = jwt.verify(req.signedCookies.authToken,process.env.jsonSecret)
     console.log(jwtResponse);
     res.locals.userId = jwtResponse.userId ;
+    res.locals.name = jwtResponse.name ;
     res.locals.avatar = jwtResponse.avatar ; 
     next()
     }

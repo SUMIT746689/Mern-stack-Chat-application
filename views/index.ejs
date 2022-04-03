@@ -61,7 +61,11 @@
         
         let responseData ;
        
-        
+        const errorPTag = document.querySelectorAll('.error');
+        errorPTag.forEach((value)=>{
+          value.style.display = 'none';
+        })
+        console.log(errorPTag);
         
         if(noOfClick === 1 ){
           noOfClick = 2 ;
@@ -79,7 +83,8 @@
           .then((data)=>data.json())
           .then((data)=>{
             responseData = data ;
-            console.log(data)
+            console.log(data);
+            noOfClick = 1;
           })
           .catch(err=>{console.log(err)});
           //handle success message

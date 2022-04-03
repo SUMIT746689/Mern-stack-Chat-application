@@ -9,10 +9,19 @@ const messageSchema =new mongoose.Schema({
         type : String,
         required : true
     },
+    user_name : {
+        type : String,
+        required : true
+    },
     perticipent_id : {
         type : String,
         required : true
     },
+    perticipent_name : {
+        type : String,
+        required : true
+    },
+    
     user_avatar : {
         type : String
     },
@@ -20,7 +29,10 @@ const messageSchema =new mongoose.Schema({
         type : String
     },
     message : {
-        type : Array
+        type : Array,
+        body : {
+            type : Object
+        }
     }
 },{timestamps : true});
 

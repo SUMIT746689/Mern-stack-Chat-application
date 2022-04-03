@@ -2,10 +2,11 @@ const { Message } = require("../../schema/messageSchema");
 const { Users } = require("../../schema/usersSchema");
 
 
-const chatMessage =async (req,res,next)=>{
+const chatMessage = async (req,res,next)=>{
    try{
     let messageData ; 
     console.log(req.files);
+    
     //create a database object for message 
     if(req.files[0]){
         messageData = {
@@ -30,14 +31,17 @@ const chatMessage =async (req,res,next)=>{
         
         // console.log(messageData);
         console.log(req.files);
-        await io.on('connection',(socket)=>{
-            console.log('connected'); 
+        io.on('connection',(socket)=>{
+            console.log('A user connected'); 
+            socket.broadcast.emit('allMessages',{data : "heieiei"})
         });
+
         const conversationId = req.params.id ;
     }
 
     res.json({body :req.body});
    }
+
    catch(err){
     res.json(err.message);
    }
