@@ -44,25 +44,21 @@
         </a>
       </div>
       <!--conversations chats-->
-      <div id="chat-title">
+      <div id="chat-title" >
+        <img src="./images/trash.png" alt="Delete Conversation" style="padding-left :95%" />
+      </div>
+      <div id ="chat-message-list">
+        
+      </div>
+
+      <!-- <div id="chat-title">
         <span>Sumit</span>
         <img src="./images/trash.png" alt="Delete Conversation" />
+      </div> -->
+      <div id="chat-message-list" style="overflow: scroll;height: max-content;">
+        
       </div>
-      <div id="chat-message-list">
-        <div class="message-row other-message">
-          <div class="message-content">
-            <img src="./images/user1.png" alt="Sumit" />
-            <div class="message-text">Ok then</div>
-            <div class="message-time">Apr 16</div>
-          </div>
-        </div>
-        <div class="message-row you-message">
-          <div class="message-content">
-            <div class="message-text">Lorem ipsum dolor sit amet</div>
-            <div class="message-time">Apr 16</div>
-          </div>
-        </div>
-      </div>
+      
 
       <!--chat form for send message-->
       <form id="chat-form">
@@ -102,6 +98,8 @@
     const modalWrapperFormInput = document.querySelector('#modal-wrapper-form-input');
     const modalWrapperFormInputSearch = document.querySelector('#modal-wrapper-form-input-search');
     const chatForm = document.querySelector('#chat-form');
+    const chatTitle = document.querySelector('#chat-title');
+    const chatMessageList = document.querySelector('#chat-message-list');
     
     let noOfRequestOnPerClick = 1 ;
     let conversationId ; 
@@ -135,7 +133,7 @@
       .then((data)=>data.json())
       .then((data)=>{
         responseData = data ;
-        console.log(data);
+        console.log('kmlklk');
       })
       .catch((err)=>{console.log(err)})
       //set 
@@ -156,7 +154,10 @@
         
         //send data to server for create a conversation
         await fetch(`/inbox/${id}`,{
-          method: 'POST'
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
         })
         .then((data)=>data.json())
         .then((data)=>{
@@ -172,10 +173,12 @@
     }
 
     //conversation event handler
-    function conversation(id){
+    async function conversation(id){
 
       //set conversationId value
       conversationId = id ;
+      let messageDatas ;
+
       //set conversation un Active and active
       const conversationList = document.querySelectorAll(`.conversation`);
       
@@ -185,11 +188,50 @@
 
       console.log(id);
       chatForm.style.visibility = 'visible';
+      await fetch(`/inbox/perticipentMessages/${id}`,{
+          method: 'GET',
+        })
+        .then((data)=>data.json())
+        .then((data)=>{
+          messageDatas = data ;
+        })
+        .catch(err=>{console.log(err)});
+
+      console.log(messageDatas);
+
+      if(messageDatas?.messageData?.message){
+        let sendMessage ='';
+        let sendOther 
+        messageDatas.messageData.message.forEach(value=>{
+          console.log(value.senderId === messageDatas.userId);
+          if(value.senderId === messageDatas.userId){
+            sendMessage += `
+            <div class="message-row other-message">
+              <div class="message-content">
+                <img src="./avatars/${messageDatas.messageData.user_avatar}" alt="mehedi" />
+                <div class="message-text">${value.message}</div>
+                <div class="message-time">Apr 16</div>
+              </div>
+            </div>` 
+          }
+          else{
+            sendMessage += `
+            <div class="message-row you-message">
+              <div class="message-content">
+                <img src="./avatars/${messageDatas.messageData.perticipent_avatar}" alt="mehedi" />
+                <div class="message-text">${value.message}</div>
+                <div class="message-time">Apr 16</div>
+              </div>
+            </div>` 
+          }
+        });
+        console.log(sendMessage);
+        chatMessageList.innerHTML = sendMessage ;
+      }
     }
     
     
     //send message to server 
-
     chatForm.addEventListener('submit',async(e)=>{
       e.preventDefault();
       
@@ -199,6 +241,9 @@
       //inbox messages 
       if(conversationId){
         socket.on('allMessages',function(data){
+          console.log(data);
+        })
+        socket.emit('sendMessage',function(data){
           console.log(data);
         })
         await fetch(`/inbox/messages/${conversationId}`,{
@@ -215,13 +260,6 @@
       }
       
     });
-
-    
-
-    // //pass if have a conversationID
-    // if(conversationId){
-      
-    // }
     
     </script>
   </body>

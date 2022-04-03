@@ -24,22 +24,23 @@ const chatMessage = async (req,res,next)=>{
     
     //if have a message then send to database   
     if(req.body.message ){
-        const messageDatas =await Message.findOne({_id : req.params.id},'message');
-        console.log(messageDatas.message); 
+        const messageDatas = await Message.findOne({_id : req.params.id},'message');
+        //console.log(messageDatas.message); 
     
-        const users =await Message.updateOne({_id : req.params.id},{message : [...messageDatas.message,messageData]})
+        const users = await Message.updateOne({_id : req.params.id},{message : [...messageDatas.message,messageData]})
         
         // console.log(messageData);
-        console.log(req.files);
-        io.on('connection',(socket)=>{
-            console.log('A user connected'); 
-            socket.broadcast.emit('allMessages',{data : "heieiei"})
-        });
-
-        const conversationId = req.params.id ;
+        //console.log(req.files);
+        
+        let datas ;
+        
+        global.io.emit('allMessages',{data : req.body.message });
+        
+        res.json({message : messageDatas.message});
+        
+    }else{
+        res.status(200).json({message : ''});
     }
-
-    res.json({body :req.body});
    }
 
    catch(err){
