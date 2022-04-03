@@ -22,16 +22,21 @@
       <div id="conversation-list">
         <% responseMessage.forEach((value)=>{%>
         <div class="conversation conversation-<%= value._id%>" onclick="conversation('<%=value._id%>')" >
-          <%if(value.perticipent_avatar){ %>
-            <img src= "<%=`./avatars/${value.perticipent_avatar}`%>" alt="Sumit" />
-          <% }else{ %>
-            <img src="./images/user1.png" alt="" />
-          <% } %>
-            <% if(value.user_id === userId){%>
-              <div class="title-text"><%= value.perticipent_name%></div>
+          <% if(value.user_id === userId){%>
+            <%if(value.perticipent_avatar){ %>
+              <img src= "<%=`./avatars/${value.perticipent_avatar}`%>" alt="Sumit" />
             <% }else{ %>
-              <div class="title-text"><%= value.perticipent_name%></div>
+              <img src="./images/user1.png" alt="" />
             <% } %>
+            <div class="title-text"><%= value.perticipent_name%></div>
+          <% }else{ %>
+            <%if(value.user_avatar){ %>
+              <img src= "<%=`./avatars/${value.user_avatar}`%>" alt="Sumit" />
+            <% }else{ %>
+              <img src="./images/user1.png" alt="" />
+            <% } %>
+            <div class="title-text"><%= value.user_name%></div>
+          <% } %>
           <di class="created-date"> Apr 16 </di>
           <div class="conversation-message">This is a message</div>
         </div>
@@ -204,26 +209,52 @@
         let sendOther 
         messageDatas.messageData.message.forEach(value=>{
           console.log(value.senderId === messageDatas.userId);
-          if(value.senderId === messageDatas.userId){
-            sendMessage += `
-            <div class="message-row other-message">
-              <div class="message-content">
-                <img src="./avatars/${messageDatas.messageData.user_avatar}" alt="mehedi" />
-                <div class="message-text">${value.message}</div>
-                <div class="message-time">Apr 16</div>
-              </div>
-            </div>` 
+          
+          if(messageDatas.messageData.user_id === messageDatas.userId ){
+            
+            if(messageDatas.userId !== value.senderId){
+              sendMessage += `
+              <div class="message-row other-message">
+                <div class="message-content">
+                  <img src="./avatars/${messageDatas.messageData.user_avatar}" alt="mehedi" />
+                  <div class="message-text">${value.message}</div>
+                  <div class="message-time">Apr 16</div>
+                </div>
+              </div>` 
+            }
+            else{
+              sendMessage += `
+              <div class="message-row you-message">
+                <div class="message-content">
+                  <img src="./avatars/${messageDatas.messageData.user_avatar}" alt="mehedi" />
+                  <div class="message-text">${value.message}</div>
+                  <div class="message-time">Apr 16</div>
+                </div>
+              </div>` 
+            }
+          }else{
+            if(messageDatas.userId !== value.senderId){
+              sendMessage += `
+              <div class="message-row other-message">
+                <div class="message-content">
+                  <img src="./avatars/${messageDatas.messageData.perticipent_avatar}" alt="mehedi" />
+                  <div class="message-text">${value.message}</div>
+                  <div class="message-time">Apr 16</div>
+                </div>
+              </div>` 
+            }
+            else{
+              sendMessage += `
+              <div class="message-row you-message">
+                <div class="message-content">
+                  <img src="./avatars/${messageDatas.messageData.user_avatar}" alt="mehedi" />
+                  <div class="message-text">${value.message}</div>
+                  <div class="message-time">Apr 16</div>
+                </div>
+              </div>` 
+            }
           }
-          else{
-            sendMessage += `
-            <div class="message-row you-message">
-              <div class="message-content">
-                <img src="./avatars/${messageDatas.messageData.perticipent_avatar}" alt="mehedi" />
-                <div class="message-text">${value.message}</div>
-                <div class="message-time">Apr 16</div>
-              </div>
-            </div>` 
-          }
+          
         });
         console.log(sendMessage);
         chatMessageList.innerHTML = sendMessage ;
