@@ -1,20 +1,22 @@
 //External library
 const express = require('express');
-const {Server} = require('socket.io');
 const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser')
-
-require('dotenv').config()
+const cookieParser = require('cookie-parser');
+const {Server} = require('socket.io');
 
 //confige express and socket io
 const app = express();
 const http = require('http');
+const server = http.createServer(app);
+const io = new Server(server); 
+
 const login = require('./route/login');
 const inbox = require('./route/inbox');
 const users = require('./route/users');
 const { defaultRouter, defaultErrorRouter } = require('./middleware/defaultErrorHandler');
-const server = http.createServer(app);
-const io = new Server(server);
+
+
+require('dotenv').config()
 
 //connected with database
 mongoose.connect('mongodb://localhost:27017/mehedi_chat_application')
@@ -38,15 +40,16 @@ app.set('view engine','ejs');
 //set cookie parser
 app.use(cookieParser(String(process.env.signedCookieSecret)))
 
+//socket io pass 
+app.use((req,res,next)=>{
+  req.io = io ;
+  next();
+})
 
 //application routes
 app.use('/',login);
 app.use('/users',users);
 app.use('/inbox',inbox);
-
-//chats control using socketIO
-
-global.io = io ;
 
 //default error handler
 app.use(defaultRouter);

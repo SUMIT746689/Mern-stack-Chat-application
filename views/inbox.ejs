@@ -49,19 +49,9 @@
         </a>
       </div>
       <!--conversations chats-->
-      <div id="chat-title" >
-        <img src="./images/trash.png" alt="Delete Conversation" style="padding-left :95%" />
+      <div id="chat-title">
       </div>
-      <div id ="chat-message-list">
-        
-      </div>
-
-      <!-- <div id="chat-title">
-        <span>Sumit</span>
-        <img src="./images/trash.png" alt="Delete Conversation" />
-      </div> -->
-      <div id="chat-message-list" style="overflow: scroll;height: max-content;">
-        
+      <div id="chat-message-list" >
       </div>
       
 
@@ -105,13 +95,10 @@
     const chatForm = document.querySelector('#chat-form');
     const chatTitle = document.querySelector('#chat-title');
     const chatMessageList = document.querySelector('#chat-message-list');
+    const chatMessage = document.querySelector('#chat-message');
     
     let noOfRequestOnPerClick = 1 ;
     let conversationId ; 
-
-    //socket.io create
-    const socket = io();
-    
 
     //show modal wrapper for create new conversion
     newMessageContainer.addEventListener('click',()=>{
@@ -202,16 +189,20 @@
         })
         .catch(err=>{console.log(err)});
 
-      console.log(messageDatas);
+      
 
       if(messageDatas?.messageData?.message){
+
         let sendMessage ='';
         let sendOther 
+
         messageDatas.messageData.message.forEach(value=>{
-          console.log(value.senderId === messageDatas.userId);
-          
+        
           if(messageDatas.messageData.user_id === messageDatas.userId ){
             
+            chatTitle.innerHTML = `<span>${messageDatas.messageData.perticipent_name}</span>
+            <img src="./images/trash.png" alt="Delete Conversation" />`
+
             if(messageDatas.userId !== value.senderId){
               sendMessage += `
               <div class="message-row other-message">
@@ -220,7 +211,7 @@
                   <div class="message-text">${value.message}</div>
                   <div class="message-time">Apr 16</div>
                 </div>
-              </div>` 
+              </div>`
             }
             else{
               sendMessage += `
@@ -232,7 +223,12 @@
                 </div>
               </div>` 
             }
-          }else{
+          }
+          else{
+
+            chatTitle.innerHTML = `<span>${messageDatas.messageData.user_name}</span>
+            <img src="./images/trash.png" alt="Delete Conversation"  />`
+           
             if(messageDatas.userId !== value.senderId){
               sendMessage += `
               <div class="message-row other-message">
@@ -256,7 +252,6 @@
           }
           
         });
-        console.log(sendMessage);
         chatMessageList.innerHTML = sendMessage ;
       }
     }
@@ -271,12 +266,12 @@
 
       //inbox messages 
       if(conversationId){
-        socket.on('allMessages',function(data){
-          console.log(data);
-        })
-        socket.emit('sendMessage',function(data){
-          console.log(data);
-        })
+        console.log({'conversationId' : conversationId})
+        //socket.io create
+        const socket = io();
+
+        socket.emit('allMessages',{value : chatMessage.value})
+        
         await fetch(`/inbox/messages/${conversationId}`,{
           method: 'POST',
           body : formData,
