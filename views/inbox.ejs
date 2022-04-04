@@ -99,9 +99,11 @@
     
     let noOfRequestOnPerClick = 1 ;
     let conversationId ; 
+    let userID ;
 
     //show modal wrapper for create new conversion
     newMessageContainer.addEventListener('click',()=>{
+
       modalWrapper.style.display = 'block'
     })
     //close modal wrapper click handle
@@ -199,7 +201,7 @@
         messageDatas.messageData.message.forEach(value=>{
         
           if(messageDatas.messageData.user_id === messageDatas.userId ){
-            
+            userID = messageDatas.userId ;
             chatTitle.innerHTML = `<span>${messageDatas.messageData.perticipent_name}</span>
             <img src="./images/trash.png" alt="Delete Conversation" />`
 
@@ -225,7 +227,7 @@
             }
           }
           else{
-
+            userID = messageDatas.userId ;
             chatTitle.innerHTML = `<span>${messageDatas.messageData.user_name}</span>
             <img src="./images/trash.png" alt="Delete Conversation"  />`
            
@@ -267,10 +269,6 @@
       //inbox messages 
       if(conversationId){
         console.log({'conversationId' : conversationId})
-        //socket.io create
-        const socket = io();
-
-        socket.emit('allMessages',{value : chatMessage.value})
         
         await fetch(`/inbox/messages/${conversationId}`,{
           method: 'POST',
@@ -287,6 +285,36 @@
       
     });
     
+    //socket.io create
+    const socket = io();
+    socket.on('sendMessage',value=>{
+      console.log(userID === value.sender);
+      if(userID === value.sender){
+        const sendMessageElements = `
+        <div class="message-row you-message">
+          <div class="message-content">
+            <img src="./avatars/${value}" alt="mehedi" />
+            <div class="message-text">${value.message}</div>
+            <div class="message-time">Apr 16</div>
+          </div>
+        </div>`
+        chatMessageList.innerHTML = sendMessageElements + chatMessageList.innerHTML ;
+      }else{
+        const sendMessageElements = `
+        <div class="message-row other-message">
+          <div class="message-content">
+            <img src="./avatars/${value}" alt="mehedi" />
+            <div class="message-text">${value.message}</div>
+            <div class="message-time">Apr 16</div>
+          </div>
+        </div>`
+        chatMessageList.innerHTML = sendMessageElements + chatMessageList.innerHTML ;
+      }
+      
+      
+    })
+
+
     </script>
   </body>
 </html>

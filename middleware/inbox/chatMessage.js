@@ -27,11 +27,10 @@ const chatMessage = async (req,res,next)=>{
        
         const users = await Message.updateOne({_id : req.params.id},{message : [...messageDatas.message,messageData]})
         
-        let datas ;
         //console.log(req.io);
-        req.io.on('connection',socket=>{
-            console.log('connectiong socket io');
-            socket.on('allMessages',(value)=>{console.log(value)})
+        req.io.emit('sendMessage',{
+            'sender' : res.locals.userId,
+            'message' : req.body.message 
         })
         
         res.json({message : messageDatas.message});
