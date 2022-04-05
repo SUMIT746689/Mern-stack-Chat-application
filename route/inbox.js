@@ -40,6 +40,6 @@ router.post('/messages/:id',authCheck,chatAvatarHandle,chatMessage);
 router.post('/:id',authCheck,createConversationByUserId);
 
 //delete conversation
-router.delete('/:id',deleteConversation)
+router.delete('/:id',authCheck,deleteConversation)
 
 module.exports = router ;

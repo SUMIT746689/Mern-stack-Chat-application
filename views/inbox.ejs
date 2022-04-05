@@ -38,7 +38,7 @@
             <div class="title-text"><%= value.user_name%></div>
           <% } %>
           <di class="created-date"> Apr 16 </di>
-          <div class="conversation-message">This is a message</div>
+          <!-- <div class="conversation-message">This is a message</div> -->
         </div>
         <% }) %>
       </div>
@@ -83,6 +83,7 @@
       </div>
     </div>
 
+    <script type = "text/JavaScript" src = " https://MomentJS.com/downloads/moment.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
     
@@ -190,10 +191,12 @@
         .then((data)=>{
           console.log(data);
           messageDatas = data ;
+          userID = data.userId ;
         })
         .catch(err=>{console.log(err)});
 
-      
+        chatTitle.innerHTML = `<span>${''}</span>
+            <img src="./images/trash.png" onclick="deleteConversation('${conversationId}')" />`
 
       if(messageDatas?.messageData?.message){
 
@@ -217,57 +220,57 @@
 
 
           if(messageDatas.messageData.user_id === messageDatas.userId ){
-            userID = messageDatas.userId ;
             
-            chatTitle.innerHTML = `<span>${messageDatas.messageData.perticipent_name}</span>
+            
+            chatTitle.innerHTML = `<span>${messageDatas.messageData.perticipent_name || ''}</span>
             <img src="./images/trash.png" onclick="deleteConversation('${conversationId}')" />`
 
             
-            if(messageDatas.userId === value.senderId){
-              sendMessage += `
+            if(messageDatas.userId !== value.senderId){
+              sendMessage = `
               <div class="message-row other-message">
                 <div class="message-content">
                   <img src="./avatars/${messageDatas.messageData.perticipent_avatar}" alt="mehedi" />
                   ${chatResponse}
-                  <div class="message-time">Apr 16</div>
+                  <div class="message-time">${moment(value.date).fromNow()}</div>
                 </div>
-              </div>`
+              </div>` + sendMessage
             }
             else{
-              sendMessage += `
+              sendMessage = `
               <div class="message-row you-message">
                 <div class="message-content">
                   <img src="./avatars/${messageDatas.messageData.user_avatar}" alt="mehedi" />
                   ${chatResponse}
-                  <div class="message-time">Apr 16</div>
+                  <div class="message-time">${moment(value.date).fromNow()}</div>
                 </div>
-              </div>` 
+              </div>` + sendMessage
             }
           }
           else{
             userID = messageDatas.userId ;
-            chatTitle.innerHTML = `<span>${messageDatas.messageData.user_name}</span>
+            chatTitle.innerHTML = `<span>${messageDatas.messageData.user_name || ''}</span>
             <img src="./images/trash.png" alt="Delete Conversation" onclick="deleteConversation('${conversationId}')" />`
            
-            if(messageDatas.userId === value.senderId){
-              sendMessage += `
+            if(messageDatas.userId !== value.senderId){
+              sendMessage = `
               <div class="message-row other-message">
-                <div class="message-content">
-                  <img src="./avatars/${messageDatas.messageData.perticipent_avatar}" alt="mehedi" />
-                  ${chatResponse}
-                  <div class="message-time">Apr 16</div>
-                </div>
-              </div>` 
-            }
-            else{
-              sendMessage += `
-              <div class="message-row you-message">
                 <div class="message-content">
                   <img src="./avatars/${messageDatas.messageData.user_avatar}" alt="mehedi" />
                   ${chatResponse}
-                  <div class="message-time">Apr 16</div>
+                  <div class="message-time">${moment(value.date).fromNow()}</div>
                 </div>
-              </div>` 
+              </div>` + sendMessage
+            }
+            else{
+              sendMessage = `
+              <div class="message-row you-message">
+                <div class="message-content">
+                  <img src="./avatars/${messageDatas.messageData.perticipent_avatar}" alt="mehedi" />
+                  ${chatResponse}
+                  <div class="message-time">${moment(value.date).fromNow()}</div>
+                </div>
+              </div>` + sendMessage
             }
           }
           
@@ -325,8 +328,9 @@
           const sendMessageElements = `
           <div class="message-row you-message">
             <div class="message-content">
+              <img src="./avatars/${value.sender_image}" alt="mehedi" />
               ${chatResponse}
-              <div class="message-time">Apr 16</div>
+              <div class="message-time">${moment(value.date).fromNow()}</div>
             </div>
           </div>`
           chatMessageList.innerHTML = sendMessageElements + chatMessageList.innerHTML ;
@@ -335,8 +339,9 @@
           const sendMessageElements = `
           <div class="message-row other-message">
             <div class="message-content">
+              <img src="./avatars/${value.sender_image}" alt="mehedi" />
               ${chatResponse}
-              <div class="message-time">Apr 16</div>
+              <div class="message-time">${moment(value.date).fromNow()}</div>
             </div>
           </div>`
           chatMessageList.innerHTML = sendMessageElements + chatMessageList.innerHTML ;
@@ -358,6 +363,7 @@
         })
         .catch(err=>{console.log(err)})
     }
+    console.log( moment().fromNow())
     </script>
   </body>
 </html>
