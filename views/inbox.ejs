@@ -100,6 +100,7 @@
     let noOfRequestOnPerClick = 1 ;
     let conversationId ; 
     let userID ;
+    let messageDatas ;
 
     //show modal wrapper for create new conversion
     newMessageContainer.addEventListener('click',()=>{
@@ -171,7 +172,7 @@
 
       //set conversationId value
       conversationId = id ;
-      let messageDatas ;
+      
 
       //set conversation un Active and active
       const conversationList = document.querySelectorAll(`.conversation`);
@@ -187,6 +188,7 @@
         })
         .then((data)=>data.json())
         .then((data)=>{
+          console.log(data);
           messageDatas = data ;
         })
         .catch(err=>{console.log(err)});
@@ -199,18 +201,34 @@
         let sendOther 
 
         messageDatas.messageData.message.forEach(value=>{
-        
+
+          let chatResponse ;
+          
+          if(value.message  && value.avatar){
+              chatResponse = `<div class="message-text">${value.message}</div>
+              <img src="./messageAvatars/${value.avatar}" style="width:100px;height:fit-content" alt="image" />`
+            }
+            else if(value.message){
+              chatResponse = `<div class="message-text">${value.message}</div>`
+            }
+            else{
+              chatResponse = `<img src="./messageAvatars/${value.avatar}" style="width:100px;height:fit-content" alt="image" />`
+            }
+
+
           if(messageDatas.messageData.user_id === messageDatas.userId ){
             userID = messageDatas.userId ;
+            
             chatTitle.innerHTML = `<span>${messageDatas.messageData.perticipent_name}</span>
-            <img src="./images/trash.png" alt="Delete Conversation" />`
+            <img src="./images/trash.png" onclick="deleteConversation('${conversationId}')" />`
 
-            if(messageDatas.userId !== value.senderId){
+            
+            if(messageDatas.userId === value.senderId){
               sendMessage += `
               <div class="message-row other-message">
                 <div class="message-content">
-                  <img src="./avatars/${messageDatas.messageData.user_avatar}" alt="mehedi" />
-                  <div class="message-text">${value.message}</div>
+                  <img src="./avatars/${messageDatas.messageData.perticipent_avatar}" alt="mehedi" />
+                  ${chatResponse}
                   <div class="message-time">Apr 16</div>
                 </div>
               </div>`
@@ -220,7 +238,7 @@
               <div class="message-row you-message">
                 <div class="message-content">
                   <img src="./avatars/${messageDatas.messageData.user_avatar}" alt="mehedi" />
-                  <div class="message-text">${value.message}</div>
+                  ${chatResponse}
                   <div class="message-time">Apr 16</div>
                 </div>
               </div>` 
@@ -229,14 +247,14 @@
           else{
             userID = messageDatas.userId ;
             chatTitle.innerHTML = `<span>${messageDatas.messageData.user_name}</span>
-            <img src="./images/trash.png" alt="Delete Conversation"  />`
+            <img src="./images/trash.png" alt="Delete Conversation" onclick="deleteConversation('${conversationId}')" />`
            
-            if(messageDatas.userId !== value.senderId){
+            if(messageDatas.userId === value.senderId){
               sendMessage += `
               <div class="message-row other-message">
                 <div class="message-content">
                   <img src="./avatars/${messageDatas.messageData.perticipent_avatar}" alt="mehedi" />
-                  <div class="message-text">${value.message}</div>
+                  ${chatResponse}
                   <div class="message-time">Apr 16</div>
                 </div>
               </div>` 
@@ -246,7 +264,7 @@
               <div class="message-row you-message">
                 <div class="message-content">
                   <img src="./avatars/${messageDatas.messageData.user_avatar}" alt="mehedi" />
-                  <div class="message-text">${value.message}</div>
+                  ${chatResponse}
                   <div class="message-time">Apr 16</div>
                 </div>
               </div>` 
@@ -254,6 +272,7 @@
           }
           
         });
+        console.log(chatTitle)
         chatMessageList.innerHTML = sendMessage ;
       }
     }
@@ -289,32 +308,56 @@
     const socket = io();
     socket.on('sendMessage',value=>{
       console.log(userID === value.sender);
-      if(userID === value.sender){
-        const sendMessageElements = `
-        <div class="message-row you-message">
-          <div class="message-content">
-            <img src="./avatars/${value}" alt="mehedi" />
-            <div class="message-text">${value.message}</div>
-            <div class="message-time">Apr 16</div>
-          </div>
-        </div>`
-        chatMessageList.innerHTML = sendMessageElements + chatMessageList.innerHTML ;
-      }else{
-        const sendMessageElements = `
-        <div class="message-row other-message">
-          <div class="message-content">
-            <img src="./avatars/${value}" alt="mehedi" />
-            <div class="message-text">${value.message}</div>
-            <div class="message-time">Apr 16</div>
-          </div>
-        </div>`
-        chatMessageList.innerHTML = sendMessageElements + chatMessageList.innerHTML ;
+      if (conversationId === value.conversationId ){
+        let chatResponse ;
+        if(value.message  && value.avatar){
+          chatResponse = `<div class="message-text">${value.message}</div>
+          <img src="./messageAvatars/${value.avatar}" style="width:100px;height:fit-content" alt="image" />`
+        }
+        else if(value.message){
+          chatResponse = ` <div class="message-text">${value.message}</div>`
+        }
+        else{
+          chatResponse = `<img src="./messageAvatars/${value.avatar}" style="width:100px;height:fit-content" alt="image" />`
+        }
+
+        if(userID === value.sender){
+          const sendMessageElements = `
+          <div class="message-row you-message">
+            <div class="message-content">
+              ${chatResponse}
+              <div class="message-time">Apr 16</div>
+            </div>
+          </div>`
+          chatMessageList.innerHTML = sendMessageElements + chatMessageList.innerHTML ;
+        }
+        else{
+          const sendMessageElements = `
+          <div class="message-row other-message">
+            <div class="message-content">
+              ${chatResponse}
+              <div class="message-time">Apr 16</div>
+            </div>
+          </div>`
+          chatMessageList.innerHTML = sendMessageElements + chatMessageList.innerHTML ;
+        }
       }
-      
-      
     })
 
-
+    //conversation delete
+     async function deleteConversation(id){
+      await fetch(`inbox/${id}`,{method : 'DELETE'})
+        .then((data)=>data.json())
+        .then((data)=>{
+          if(data.success){
+            location.reload();
+          }
+          else{
+            console.log(data.error)
+          }
+        })
+        .catch(err=>{console.log(err)})
+    }
     </script>
   </body>
 </html>
